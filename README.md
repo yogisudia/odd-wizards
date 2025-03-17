@@ -47,6 +47,7 @@ _If you are looking for a React admin dashboard starter, here is the [repo](http
 
 ## Getting Started
 
+
 Follow these steps to clone the repository and start the development server:
 
 - `git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git`
