@@ -34,11 +34,11 @@ export default function ChainProviderWrapper({
           }
         },
       }}
-      signerOptions={{
-        signingCosmwasm: () => ({
-          gasPrice: GasPrice.fromString('0.025ustars')
-        })
-      }}
+      // signerOptions={{
+      //   signingCosmwasm: () => ({
+      //     gasPrice: GasPrice.fromString('0.025ustars')
+      //   })
+      // }}
     >
       {children}
     </ChainProvider>
