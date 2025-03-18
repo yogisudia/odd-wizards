@@ -996,6 +996,8 @@ export async function getUserStakedNFTs(userAddress: string, daoAddress: string)
   const rpc = config?.rpc_url;
   // const daoAddress = "stars1..."; // Replace with the DAO contract address
   
+  if (!rpc) throw Error("Rpc not found");
+
   const cosmWasmClient = await CosmWasmClient.connect(rpc);
   
   try {
