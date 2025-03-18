@@ -10,7 +10,7 @@ import getConfig from '@/config/config';
 import { mst_attributes_reward } from '@prisma/client';
 import moment from 'moment';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { SigningCosmWasmClient, CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { GasPrice } from "@cosmjs/stargate";
 import { OPERATOR_CONSTANTS } from '@/constants/filterConstant';
 import { UTApi } from 'uploadthing/server';
@@ -586,8 +586,8 @@ export async function getToken(collectionAddr: string, tokenId: string) {
       })
     });
 
-    const data = await response.json();
-    return data.data.token;
+    const resp = await response.json();
+    return resp.data.token;
   } catch (error) {
     console.error('Error fetching token:', error);
     throw error;
@@ -989,4 +989,27 @@ export const uploadFile = async (file: File) => {
   const uploadResult = await utapi.uploadFiles(file);
 
   return uploadResult.data?.url;
+}
+
+
+export async function getUserStakedNFTs(userAddress: string, daoAddress: string) {
+  const rpc = config?.rpc_url;
+  // const daoAddress = "stars1..."; // Replace with the DAO contract address
+  
+  const cosmWasmClient = await CosmWasmClient.connect(rpc);
+  
+  try {
+    const queryMsg = {
+      staked_nfts: {
+        address: userAddress
+      }
+    };
+    
+    const response = await cosmWasmClient.queryContractSmart(daoAddress, queryMsg);
+    console.log(`Staked NFTs for ${userAddress}:`, response);
+    return response;
+  } catch (error) {
+    console.error(`Error querying staked NFTs for ${userAddress}:`, error);
+    throw error;
+  }
 }

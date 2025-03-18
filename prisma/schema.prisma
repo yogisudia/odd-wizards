@@ -80,6 +80,7 @@ model mst_collection {
   collection_royalties   Int?
   collection_chain       String?
   collection_seqn        Int?
+  collection_staker_daodao String?
   
   // Relasi dengan Staker
   project mst_project? @relation(fields: [collection_project_id], references: [project_id])
