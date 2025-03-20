@@ -27,6 +27,17 @@ export async function updateNftOwner(address: string, collection_address: string
             collectionAddress: collection_address
         });
 
+        //cek if exists stake in daodao
+        if(collection.collection_staker_daodao){
+            const staked_tokenIds = await getUserStakedNFTs(address, collection.collection_staker_daodao);
+            const staked_nfts = await Promise.all(staked_tokenIds.map(async (tokenId: string) => {
+                const token = await getToken(collection.collection_code ?? "-", tokenId);
+                return token;
+            }));
+
+            allTokens.push(...staked_nfts);
+        }
+
         const updatedStaker = await prisma.mst_staker.update({
             where: { staker_id: staker.staker_id, staker_collection_id: collection.collection_id },
             data: {
