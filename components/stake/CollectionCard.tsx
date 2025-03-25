@@ -43,7 +43,7 @@ const CollectionCard = ({
                         </Button>
                     </Link>
                     <Button onClick={onDetail} variant={"secondary"} className="rounded-[10px] md:text-lg w-full h-8 md:h-10">
-                        Detail
+                        { collection?.collection_website_url ? "Website" : "Detail" }
                     </Button>
                 </div>
             </div>
