@@ -109,7 +109,7 @@ export default function Header() {
       const handleLoad = async () => {
         let resp = await axios.get(`/api/user/stars130tcpz6l0j9f382prlj67r29jmr25cgpacmd7r`);
         const user = resp.data?.data?.user;
-        // if (user.is_winner == "Y" && address) {
+        if (user.is_winner == "Y" && address) {
           // Add a small delay to ensure all components are rendered
           setTimeout(() => {
             setRewardModal(true);
@@ -118,7 +118,7 @@ export default function Header() {
             //   wallet_address: address
             // })
           }, 500); // Half second delay to ensure everything is rendered
-        // }
+        }
       };
 
       // If the page is already loaded
