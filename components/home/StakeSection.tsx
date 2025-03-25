@@ -48,17 +48,19 @@ const StakeSection = ({
       <div hidden={project?.project_is_leaderboard != "Y"}>
         <div className="bg-[url('/images/blur-brown.png')] bg-cover bg-center mt-4 md:!mt-0">
           <Leaderboard project={project} />
-          <div className="w-full relative text-white flex flex-col justify-center items-center text-center">
-            <div className="mt-4 md:!mt-8 mx-20">
-              <h1 className="text-[20px] md:text-[36px] font-bold">
-                Prize
-              </h1>
-              <p className="text-[13px] md:!text-lg text-gray-400 leading-tight">
-                Only the biggest stakers will claim victory and win the prize!
-              </p>
+          {
+            imageList?.length > 0 && <div className="w-full relative text-white flex flex-col justify-center items-center text-center">
+              <div className="mt-4 md:!mt-8 mx-20">
+                <h1 className="text-[20px] md:text-[36px] font-bold">
+                  Prize
+                </h1>
+                <p className="text-[13px] md:!text-lg text-gray-400 leading-tight">
+                  Only the biggest stakers will claim victory and win the prize!
+                </p>
+              </div>
+              <Carousel images={imageList ?? []} interval={15000} />
             </div>
-            <Carousel images={imageList ?? []} interval={15000} />
-          </div>
+          }
         </div>
       </div>
     </div>

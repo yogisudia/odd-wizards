@@ -14,6 +14,14 @@ const CollectionCard = ({
 
     const [infoModal, setInfoModal] = useState<boolean>(false);
 
+    const onDetail = () => {
+        if(collection?.collection_website_url){
+            window.open(collection.collection_website_url, '_blank', 'noopener,noreferrer');
+        } else {
+            setInfoModal(true);
+        }
+    }
+
     return (
         <div className="w-full bg-[#171717] border border-[#323237] p-4 md:px-8 md:p-6 rounded-[35px] md:rounded-[50px] flex items-center gap-x-4">
             <InfoModal collection={collection} isOpen={infoModal} onClose={() => { setInfoModal(false) }} loading={false} />
@@ -34,7 +42,7 @@ const CollectionCard = ({
                             Trade
                         </Button>
                     </Link>
-                    <Button onClick={() => { setInfoModal(true) }} variant={"secondary"} className="rounded-[10px] md:text-lg w-full h-8 md:h-10">
+                    <Button onClick={onDetail} variant={"secondary"} className="rounded-[10px] md:text-lg w-full h-8 md:h-10">
                         Detail
                     </Button>
                 </div>

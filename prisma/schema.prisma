@@ -81,6 +81,7 @@ model mst_collection {
   collection_chain       String?
   collection_seqn        Int?
   collection_staker_daodao String?
+  collection_website_url String?
   
   // Relasi dengan Staker
   project mst_project? @relation(fields: [collection_project_id], references: [project_id])

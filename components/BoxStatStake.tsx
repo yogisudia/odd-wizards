@@ -78,7 +78,7 @@ export const BoxStatStake = ({
             </div>
             <div className="hidden md:!flex bg-[url('/images/About.gif')] bg-cover bg-center border-2 border-green-500 flex-grow items-center p-4 px-8 gap-6 w-[60px] h-[68px] md:w-[105px] md:h-[105px] md:w-full rounded-[15px] md:rounded-[25px] text-[#A1A1AA]">
               <div>
-                <img src="/images/Icon/wzrd.png" className="h-[55px]" />
+                <img src={project.project_symbol_img ?? "/images/Icon/wzrd.png"} className="h-[55px]" />
               </div>
               <div className="hidden md:!block">
                 <span className="text-[12px] md:text-[20px] text-white">Token</span>

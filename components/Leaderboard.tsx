@@ -91,7 +91,7 @@ const Leaderboard = ({
         Leaderboard
       </h1>
       <p className="flex text-xs md:!text-lg text-gray-400 text-center leading-tight">
-        Stake your Wizard, rise to the top, <span className="hidden md:!flex mx-2">and show off your Odds collection.</span>
+        Stake your NFT, rise to the top, <span className="hidden md:!flex mx-2">and show off your collection.</span>
       </p>
       <p className="md:!hidden text-xs md:!text-lg text-gray-400 text-center leading-tight">
         and show off your Odds collection.
