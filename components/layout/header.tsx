@@ -107,7 +107,7 @@ export default function Header() {
     if (address) {
       // Wait for the window load event
       const handleLoad = async () => {
-        let resp = await axios.get(`/api/user/stars130tcpz6l0j9f382prlj67r29jmr25cgpacmd7r`);
+        let resp = await axios.get(`/api/user/${address}`);
         const user = resp.data?.data?.user;
         if (user.is_winner == "Y" && address) {
           // Add a small delay to ensure all components are rendered
