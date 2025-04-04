@@ -125,7 +125,7 @@ const StakeCard = ({
       <img src={collection.collection_image_url ?? ""} className="shrink-0 h-[105px] md:!h-[175px] rounded-[35px] mx-auto" />
       <div className="w-full p-2 md:p-4">
         <div className="text-center md:flex md:text-start justify-between mb-2">
-          <Link href="https://www.stargaze.zone/m/oddswizard/tokens" target="_blank" className="w-full flex items-center justify-between gap-x-4">
+          <Link href={`https://www.stargaze.zone/m/${collection.collection_address}/tokens`} target="_blank" className="w-full flex items-center justify-between gap-x-4">
             <h1 className="text-white text-[20px] md:text-3xl font-semibold">{collection.collection_name}</h1>
             {/* <span className="text-white text-sm md:!text-lg font-semibold">Trade collection</span> */}
             <img src="/images/Icon/stargaze.png" className="w-[25px] md:!w-[40px]" />

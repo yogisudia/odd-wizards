@@ -232,7 +232,7 @@ const StakeSlider = ({
             ${sliderPosition === maxValue ? 'text-green-400 opacity-100' : 'opacity-80'}
           `}
         >
-          {sliderPosition === maxValue ? "Staked!" : "Stake Now"}
+          {sliderPosition === maxValue ? "Staked!" : "Swipe to Stake"}
         </span>
       </div>
     </div>

@@ -123,16 +123,16 @@ const StakeCardMobile = ({
         <div className="w-full bg-[url('/images/Account.gif')] bg-cover bg-center border border-[#323237] w-full p-4 py-6 md:p-8 rounded-[25px]">
             <InfoModal collection={collection} isOpen={infoModal} onClose={() => { setInfoModal(false) }} loading={false} />
             <div className="flex items-center gap-x-4">
-                <img src="/images/stake-wizard.gif" className="shrink-0 h-[105px] md:!h-[175px] rounded-[35px] mx-auto" />
+                <img src={collection.collection_image_url ?? ""} className="shrink-0 h-[105px] md:!h-[175px] rounded-[35px] mx-auto" />
                 <div className="w-full p-2 md:p-4">
                     <div className="text-center md:flex md:text-start justify-between mb-2">
-                        <Link href="https://www.stargaze.zone/m/oddswizard/tokens" target="_blank" className="w-full flex items-center justify-between gap-x-4">
-                            <h1 className="text-white text-xl font-semibold">Odds Wizard</h1>
+                        <Link href={`https://www.stargaze.zone/m/${collection.collection_address}/tokens`} target="_blank" className="w-full flex items-center justify-between gap-x-4">
+                            <h1 className="text-white text-xl font-semibold">{collection.collection_name}</h1>
                             <img src="/images/Icon/stargaze.png" className="w-[25px] md:!w-[40px]" />
                         </Link>
                     </div>
                     <div className="flex gap-x-1 items-end">
-                        <p className="text-xs md:!text-lg text-gray-400 leading-tight line-clamp-3">ODDS is a mystical garden where the most peculiar beings gather and play within the Cosmos. Starting with the Odds Wizard, the first entity to step into the ODDS, paving the way for an ever-growing collection of oddities, waiting to be discovered.</p>
+                        <p className="text-xs md:!text-lg text-gray-400 leading-tight line-clamp-3">{collection.collection_description}</p>
                         <span className="cursor-pointer text-xs md:!text-md text-green-500" onClick={() => { setInfoModal(true) }}>more</span>
                     </div>
                 </div>

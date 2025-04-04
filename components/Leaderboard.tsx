@@ -40,7 +40,12 @@ const Leaderboard = ({
           signal,
         });
         const data = resp.data.data ?? [];
-        setLeaderboard((prev) => [...prev, ...data]); // Menambahkan data baru ke data yang sudah ada
+        if(page == 0){
+          setLeaderboard(data); 
+        } else {
+          setLeaderboard((prev) => [...prev, ...data]); // Menambahkan data baru ke data yang sudah ada
+        }
+        
         setHasMore(data.length > 0); // Jika tidak ada data, set hasMore ke false
       } catch (error) {
         if (axios.isCancel(error)) {
