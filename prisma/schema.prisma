@@ -162,11 +162,13 @@ model mst_raffle_reward {
   reward_amount       Int?
   reward_name         String?
   reward_collection   String?
+  reward_collection_address String?
   reward_token_id     String?
   reward_token_img    String?
   reward_win_address  String?
   reward_inject_win_address String?
   reward_raffle_id    Int?
+  reward_tx_hash      String?
   raffle  trn_raffle?   @relation(fields: [reward_raffle_id], references: [raffle_id])
 }
 

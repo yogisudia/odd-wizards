@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         reward_raffle_id: raffle.raffle_id,
         reward_inject_win_address: win_address,
         reward_collection: collection_address,
+        reward_collection_address: token.collection.contractAddress,
         reward_token_id: token_id,
         reward_name: token.name,
         reward_token_img: token?.media?.url

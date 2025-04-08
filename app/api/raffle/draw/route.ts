@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/prisma/prisma';
+import { transferNFT } from '@/lib/utils';
+import getConfig from '@/config/config';
+
+const config = getConfig();
 
 interface DrawWinnerRequest {
   raffle_id: number;
@@ -41,6 +45,13 @@ export async function POST(request: NextRequest) {
     if (!wallet_address) {
       return NextResponse.json(
         { message: 'Wallet address is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!config) {
+      return NextResponse.json(
+        { message: 'Config not found' },
         { status: 400 }
       );
     }
@@ -127,20 +138,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Update rewards with winners
-    const updatedRewards = await Promise.all(
-      raffle.rewards?.map(async (reward, index) => {
-        return prisma.mst_raffle_reward.update({
-          where: {
-            reward_id: reward.reward_id
-          },
-          data: {
-            reward_win_address: raffle.rewards[index].reward_inject_win_address || winners[index],
-          }
-        });
-      }) || []
-    );
-
     // Calculate statistics
     const totalTickets = raffle.participants.reduce(
       (sum, p) => sum + (p.participant_amount || 0),
@@ -158,6 +155,50 @@ export async function POST(request: NextRequest) {
         winProbability: ((winnerTickets / totalTickets) * 100).toFixed(2) + '%'
       };
     });
+
+    // Update rewards with winners
+    const updatedRewards = await Promise.all(
+      raffle.rewards?.map(async (reward, index) => {
+        return prisma.mst_raffle_reward.update({
+          where: {
+            reward_id: reward.reward_id
+          },
+          data: {
+            reward_win_address: raffle.rewards[index].reward_inject_win_address || winners[index],
+          }
+        });
+      }) || []
+    );
+
+    try {
+      // Send reward to winners
+      // Using Promise.all to wait for all async operations to complete
+      await Promise.all(raffle.rewards.map(async (reward, idx) => {
+        const winner = raffle.rewards[idx].reward_inject_win_address || winners[idx];
+        if (reward.reward_collection_address && reward.reward_token_id) {
+          const resp = await transferNFT(config.mnemonic_reward_wallet, reward.reward_collection_address, winner, reward.reward_token_id);
+          const txHash = resp.transactionHash;
+
+          await prisma.mst_raffle_reward.update({
+            where: {
+              reward_id: reward.reward_id
+            },
+            data: {
+              reward_tx_hash: txHash
+            }
+          });
+        }
+      }));
+    } catch (error) {
+      console.error("Error sending rewards:", error);
+      return NextResponse.json(
+        {
+          message: 'Failed to send reward',
+          data: undefined
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       {
