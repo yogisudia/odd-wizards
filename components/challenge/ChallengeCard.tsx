@@ -79,7 +79,7 @@ const ChallengeCard = ({
                     <span className="font-bold block mb-2">{project.project_name}</span>
                     <div className="relative flex-1 w-full mb-2">
                         <img
-                            src={project.project_profile_image ?? ""}
+                            src={project.project_chellange_img ?? (project.project_profile_image ?? "")}
                             alt="Project"
                             className="absolute inset-0 w-full h-full rounded-[8px] object-cover"
                         />

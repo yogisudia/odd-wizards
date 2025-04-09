@@ -45,6 +45,8 @@ model mst_project {
   project_chellange_tierrule String?
   project_chellange_periode String?
   project_chellange_note    String?
+  project_chellange_img  String?
+  project_chellange_status String? @default("N")
 
   stakers mst_staker[]
   rewards mst_reward[]
