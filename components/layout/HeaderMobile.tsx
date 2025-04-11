@@ -72,7 +72,7 @@ export default function HeaderMobile() {
         <div>
             {/* Mobile Menu */}
             {opend && (
-                <div className="absolute z-[999] top-0 left-0 right-0 h-screen bg-[url('/images/About.gif')] bg-cover bg-center py-4 md:hidden">
+                <div className="absolute z-[999] top-0 left-0 right-0 h-screen bg-black bg-cover bg-center py-4 md:hidden">
                     <div className="relative pt-10">
                         <img src={wallet.status == WalletStatus.Connected ? "/images/mobile/goblin.png" : "/images/mobile/goblin-sleep.png"} className="absolute top-24 right-0 w-[155px] pointer-events-none" />
                         <div className="absolute top-0 right-2">
