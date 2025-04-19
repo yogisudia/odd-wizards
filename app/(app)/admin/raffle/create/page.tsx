@@ -39,8 +39,8 @@ import Link from "next/link";
 import { ArrowUp, ChevronUp, ChevronDown } from "lucide-react";
 import { mst_project } from "@prisma/client";
 
+const config = getConfig();
 export default function Stake() {
-    const config = getConfig();
     const { user, staker } = useUser();
     const [loading, setLoading] = useState<boolean>(false);
     const [raffles, setRaffles] = useState([]);

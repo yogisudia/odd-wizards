@@ -6,15 +6,25 @@ import { mst_project } from "@prisma/client";
 import axios from "axios";
 import ChallengeCard from "@/components/challenge/ChallengeCard";
 import Loading from "@/components/Loading";
+import getConfig from "@/config/config";
+import { useChain } from "@cosmos-kit/react";
 
 interface projectType extends mst_project {
     rewards?: any[];
 }
 
+const config = getConfig();
 export default function About() {
 
+    const { address, isWalletConnecting, isWalletConnected } = useChain("stargaze");
     const [loading, setLoading] = useState<boolean>(true);
     const [challenges, setChallenges] = useState<projectType[] | []>([]);
+
+    useEffect(() => {
+        if (config && address && !config.owners.includes(address)) {
+            window.location.href = '/challenge';
+        }
+    }, [address]);
 
     useEffect(() => {
         async function fetchData() {

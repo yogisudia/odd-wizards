@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import getConfig from '@/config/config';
 import { getLeaderboard } from '@/lib/soft-staking-service';
 import { addDays } from 'date-fns';
+import prisma from '@/prisma/prisma';
 
 const config = getConfig();
 
