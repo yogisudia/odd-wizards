@@ -19,7 +19,7 @@ export default function About() {
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
-            const resp = await axios.get("/api/project/challenge");
+            const resp = await axios.get(`/api/project/challenge?t=${new Date().getTime()}`);
             setChallenges(resp.data.data);
             setLoading(false);
         }
