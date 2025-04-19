@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
         const reward = await prisma.trn_distribusi_reward.findFirst({
             where: {
                 // distribusi_is_claimed: "N",
-                distribusi_wallet: staker_address
+                distribusi_wallet: staker_address,
+                distribusi_type: "NFT"
             },
             orderBy: {
                 distribusi_start: 'desc'

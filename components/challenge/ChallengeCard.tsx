@@ -6,21 +6,28 @@ import ReactCardFlip from "react-card-flip";
 import { ScrollArea } from "../scroll-area";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import axios, { AxiosResponse } from "axios";
+import { useChain } from "@cosmos-kit/react";
+import { useToast } from "../ui/use-toast";
 
 export interface ChallengeCardProps {
     project: mst_project & {
         rewards?: any[];
-    }
+    },
+    isAdmin?: boolean
 }
 
 const ChallengeCard = ({
-    project
+    project,
+    isAdmin = false
 }: ChallengeCardProps) => {
 
+    const { address } = useChain("stargaze");
     const [data, setData] = useState<any>(project);
     const [timeLeft, setTimeLeft] = useState<string>("");
     const [isFlipped, setIsFlipped] = useState<boolean>(false);
     const [isEnded, setIsEnded] = useState<boolean>(false);
+    const { toast, promiseToast } = useToast();
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -61,6 +68,40 @@ const ChallengeCard = ({
         }
     };
 
+    const doSnapshoot = async (project_code: string) => {
+        try {
+            promiseToast(axios.post(`/api/project/snapshoot?wallet_address=${address}&project_code=${project_code}`, {}), {
+              loading: {
+                title: "Processing...",
+                description: "Please Wait"
+              },
+              success: (result) => {
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+
+                return {
+                  title: "Success!",
+                  description: "Stake Successfully"
+                }
+              },
+              error: (error: AxiosResponse | any) => {
+                return {
+                  title: "Ups! Something wrong.",
+                  description: error?.response?.data?.message || 'Internal server error.'
+                }
+              }
+            });
+          } catch (error: AxiosResponse | any) {
+            toast({
+              variant: 'destructive',
+              title: 'Ups! Something wrong.',
+              description: error?.response?.data?.message || 'Internal server error.'
+            });
+          }
+    }
+
     const rules = project?.project_chellange_tierrule?.split('\\n');
     const periodes = project.project_chellange_periode?.split('\\n');
     const notes = project.project_chellange_note?.split('\\n');
@@ -88,21 +129,33 @@ const ChallengeCard = ({
                         🏆 Number of Winners: <span className="text-white">{project?.rewards ? project?.rewards.length : 0}</span>
                     </p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button
-                        onClick={() => setIsFlipped(true)}
-                        className="rounded-[8px] bg-[#323237] w-full hover:bg-[#323237] mt-auto"
-                    >
-                        Read more
-                    </Button>
-                    <Link href={`/stake/${project.project_code}`}>
-                        <Button
-                            className="rounded-[8px] bg-[#323237] w-full hover:bg-[#323237] mt-auto"
-                        >
-                            Join Now
-                        </Button>
-                    </Link>
-                </div>
+                {
+                    isAdmin ?
+                        <div className="flex items-center gap-2">
+                            <Button
+                                disabled={project?.rewards?.length == 0}
+                                onClick={() =>  {doSnapshoot(project?.project_code ?? "-")}}
+                                className="rounded-[8px] bg-[#323237] w-full hover:bg-[#323237] mt-auto"
+                            >
+                                { (project?.rewards?.length ?? 0) > 0 ? "Snapshoot" : "Already Snapshoot" }
+                            </Button>
+                        </div> :
+                        <div className="flex items-center gap-2">
+                            <Button
+                                onClick={() => setIsFlipped(true)}
+                                className="rounded-[8px] bg-[#323237] w-full hover:bg-[#323237] mt-auto"
+                            >
+                                Read more
+                            </Button>
+                            <Link href={`/stake/${project.project_code}`}>
+                                <Button
+                                    className="rounded-[8px] bg-[#323237] w-full hover:bg-[#323237] mt-auto"
+                                >
+                                    Join Now
+                                </Button>
+                            </Link>
+                        </div>
+                }
             </div>
 
             {/* Back Card */}

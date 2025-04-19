@@ -60,6 +60,7 @@ model mst_reward {
   reward_image_url      String?
   reward_collection     String?
   reward_token_id       String?
+  reward_type           String?
   reward_rank           Int?
 
   project mst_project? @relation(fields: [reward_project_id], references: [project_id])
@@ -142,6 +143,7 @@ model trn_distribusi_reward {
   distribusi_start        DateTime?
   distribusi_end          DateTime?   
   distribusi_position     Int?
+  distribusi_type         String?
   distribusi_tx_hash      String?
 }
 
