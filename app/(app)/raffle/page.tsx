@@ -39,7 +39,7 @@ export default function Stake() {
 
     const fetchRaffles = async (pageNum: number, append: boolean = false) => {
         try {
-            const resp = await axios.get(`/api/raffle/list?${ tokenType ? `type=${tokenType}` : "" }&page=${pageNum}&limit=${LIMIT}`);
+            const resp = await axios.get(`/api/raffle/list?${tokenType ? `type=${tokenType}` : ""}&page=${pageNum}&limit=${LIMIT}`);
             const { data, pagination } = resp.data;
 
             if (append) {
@@ -110,7 +110,7 @@ export default function Stake() {
     useEffect(() => {
         async function fetchData() {
             if (address) {
-                let resp = await axios.get(`/api/user/stars130tcpz6l0j9f382prlj67r29jmr25cgpacmd7r`);
+                let resp = await axios.get(`/api/user/${address}`);
                 const data = resp.data.data;
                 setStakers(data.staker);
 
@@ -122,6 +122,7 @@ export default function Stake() {
                         if (!acc[projectId]) {
                             acc[projectId] = {
                                 project_id: projectId,
+                                project_seqn: project.project_seqn,
                                 project_symbol: project?.project_symbol ?? '',
                                 project_symbol_img: project?.project_symbol_img ?? '',
                                 total_nft_staked: 0,
@@ -135,6 +136,7 @@ export default function Stake() {
                         return acc;
                     }, {} as Record<number, {
                         project_id: number;
+                        project_seqn: number;
                         project_symbol: string;
                         project_symbol_img: string;
                         total_nft_staked: number;
@@ -143,7 +145,6 @@ export default function Stake() {
                 )
 
                 setTokens(tokenFiltered);
-                setTokenType(tokenFiltered.length > 0 ? tokenFiltered[0].project_symbol : undefined);
             }
         }
 
@@ -201,18 +202,19 @@ export default function Stake() {
                     </div>
                 </div>
             </div>
+            <div className="container">
+                {address && user && (
+                    <div className="flex justify-center">
+                        <RaffleTokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
+                    </div>
+                )}
+            </div>
             {loading ? (
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-4 md:!mt-8">
                     <Loading />
                 </div>
             ) : (
                 <div className="container">
-                    {address && user && (
-                        <div className="flex justify-center mt-4 md:!mt-8">
-                            <RaffleTokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
-                        </div>
-                    )}
-
                     <div className="mt-8 md:!mt-24">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-6 md:gap-8 lg:gap-10">
                             {raffles.map((item, index) => (

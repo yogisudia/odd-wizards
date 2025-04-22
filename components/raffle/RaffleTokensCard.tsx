@@ -1,3 +1,4 @@
+"use client"
 import { cn, formatDecimal } from "@/lib/utils";
 import {
     Carousel,
@@ -10,6 +11,7 @@ import { useEffect, useState } from "react";
 
 export interface TokenInfo {
     project_id: number;
+    project_seqn: number;
     project_symbol: string;
     project_symbol_img: string;
     total_nft_staked: number;
@@ -39,18 +41,22 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
         };
     }, []);
 
+    // Sort data based on project_seqn
+    const sortedData = [...data].sort((a, b) => a.project_seqn - b.project_seqn);
+    setTokenType(sortedData.length > 0 ? sortedData[0].project_symbol : undefined);
+
     // Determine number of items to show based on screen size
     const itemsPerView = isMobile ? 1.5 : 3.5;
     
     // Check if we need to center items (2 or fewer on desktop)
-    const shouldCenterItems = data.length <= 2 && !isMobile;
+    const shouldCenterItems = sortedData.length <= 2 && !isMobile;
 
     return (
         <div className="w-full max-w-3xl mx-auto px-4">
             {shouldCenterItems ? (
                 // Centered layout for 1-2 items on desktop
                 <div className="flex justify-center gap-4">
-                    {data.map((token, index) => (
+                    {sortedData.map((token, index) => (
                         <div 
                             key={index}
                             onClick={() => { setTokenType(token.project_symbol) }}
@@ -84,11 +90,11 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                     className="w-full" 
                     opts={{
                         align: "center",
-                        loop: data.length > itemsPerView,
+                        loop: sortedData.length > itemsPerView,
                     }}
                 >
                     <CarouselContent className="-ml-2 md:-ml-4">
-                        {data.map((token, index) => (
+                        {sortedData.map((token, index) => (
                             <CarouselItem 
                                 key={index} 
                                 className="pl-2 md:pl-4 basis-4/5 md:basis-1/3"
@@ -117,7 +123,7 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                             </CarouselItem>
                         ))}
                     </CarouselContent>
-                    {data.length > itemsPerView && (
+                    {sortedData.length > itemsPerView && (
                         <>
                             <CarouselPrevious className="hidden md:!flex -left-4 md:-left-6" />
                             <CarouselNext className="hidden md:!flex -right-4 md:-right-6" />
