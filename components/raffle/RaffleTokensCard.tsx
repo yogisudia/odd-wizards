@@ -60,8 +60,8 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                         <div 
                             key={index}
                             onClick={() => { setTokenType(token.project_symbol) }}
-                            className={cn("cursor-pointer w-full max-w-xs bg-[#18181B] border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA]",
-                                tokenType == token.project_symbol && "bg-[url('/images/about.gif')] bg-cover bg-center"
+                            className={cn("cursor-pointer w-full max-w-xs border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA]",
+                                tokenType == token.project_symbol ? "bg-[url('/images/about.gif')] bg-cover bg-center" : "bg-[#18181B]"
                             )}
                         >
                             <div className="flex items-center gap-3 md:gap-4 w-full">
@@ -100,8 +100,8 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                                 className="pl-2 md:pl-4 basis-4/5 md:basis-1/3"
                             >
                                 <div onClick={() => { setTokenType(token.project_symbol) }} className={cn(
-                                    "cursor-pointer bg-[#18181B] border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full",
-                                    tokenType == token.project_symbol && "bg-[url('/images/About.gif')] bg-cover bg-center")}>
+                                    "cursor-pointer border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full",
+                                    tokenType == token.project_symbol ? "bg-[url('/images/about.gif')] bg-cover bg-center" : "bg-[#18181B]")}>
                                     <div className="flex items-center gap-3 md:gap-4 w-full">
                                         <div className="flex-shrink-0">
                                             <img
