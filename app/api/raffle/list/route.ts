@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = request.nextUrl;
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
+        const type = searchParams.get('type') as string;
         const skip = (page - 1) * limit;
 
         // Build filter conditions
@@ -25,6 +26,10 @@ export async function GET(request: NextRequest) {
             where.raffle_end = {
                 lte: new Date(searchParams.get('raffle_end')!)
             };
+        }
+
+        if(type){
+            where.raffle_price_type = type;
         }
 
         // Get total count for pagination

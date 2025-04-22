@@ -20,6 +20,7 @@ import RaffleCardCustom from "@/components/raffle/RaffleCardCustom";
 import { AnimatedList } from "@/components/ui/animated-list";
 import { Item, Notification } from "@/components/Notification";
 import { mst_project } from "@prisma/client";
+import RaffleTokensCard from "@/components/raffle/RaffleTokensCard";
 
 export default function Stake() {
     const config = getConfig();
@@ -32,12 +33,13 @@ export default function Stake() {
     const [stakers, setStakers] = useState<any>();
     const [tokens, setTokens] = useState<any[] | []>([]);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const [tokenType, setTokenType] = useState<string | undefined>(undefined);
     const { address } = useChain("stargaze");
     const LIMIT = 8;
 
     const fetchRaffles = async (pageNum: number, append: boolean = false) => {
         try {
-            const resp = await axios.get(`/api/raffle/list?page=${pageNum}&limit=${LIMIT}`);
+            const resp = await axios.get(`/api/raffle/list?${ tokenType ? `type=${tokenType}` : "" }&page=${pageNum}&limit=${LIMIT}`);
             const { data, pagination } = resp.data;
 
             if (append) {
@@ -95,46 +97,53 @@ export default function Stake() {
     }, []);
 
     useEffect(() => {
+
+        async function fetchData() {
+            setLoading(true);
+            await fetchRaffles(1);
+            setLoading(false);
+        }
+        fetchData();
+
+    }, [tokenType])
+
+    useEffect(() => {
         async function fetchData() {
             if (address) {
-                let resp = await axios.get(`/api/user/${address}`);
+                let resp = await axios.get(`/api/user/stars130tcpz6l0j9f382prlj67r29jmr25cgpacmd7r`);
                 const data = resp.data.data;
                 setStakers(data.staker);
 
-                console.log("stakers", data.staker);
+                const tokenFiltered: any[] = Object.values(
+                    data.staker.reduce((acc: any, staker: any) => {
+                        const projectId = staker.staker_project_id ?? 0;
+                        const project = staker.projects; // Getting the related project data
 
-                setTokens(
-                    Object.values(
-                        data.staker.filter((item: any) => {
-                            return item?.projects?.project_code == "oddswizard"
-                        }).reduce((acc: any, staker: any) => {
-                            const projectId = staker.staker_project_id ?? 0;
-                            const project = staker.projects; // Getting the related project data
+                        if (!acc[projectId]) {
+                            acc[projectId] = {
+                                project_id: projectId,
+                                project_symbol: project?.project_symbol ?? '',
+                                project_symbol_img: project?.project_symbol_img ?? '',
+                                total_nft_staked: 0,
+                                total_points: 0
+                            };
+                        }
 
-                            if (!acc[projectId]) {
-                                acc[projectId] = {
-                                    project_id: projectId,
-                                    project_symbol: project?.project_symbol ?? '',
-                                    project_symbol_img: project?.project_symbol_img ?? '',
-                                    total_nft_staked: 0,
-                                    total_points: 0
-                                };
-                            }
+                        acc[projectId].total_nft_staked += staker.staker_nft_staked ?? 0;
+                        acc[projectId].total_points += staker.staker_total_points ?? 0;
 
-                            acc[projectId].total_nft_staked += staker.staker_nft_staked ?? 0;
-                            acc[projectId].total_points += staker.staker_total_points ?? 0;
+                        return acc;
+                    }, {} as Record<number, {
+                        project_id: number;
+                        project_symbol: string;
+                        project_symbol_img: string;
+                        total_nft_staked: number;
+                        total_points: number;
+                    }>)
+                )
 
-                            return acc;
-                        }, {} as Record<number, {
-                            project_id: number;
-                            project_symbol: string;
-                            project_symbol_img: string;
-                            total_nft_staked: number;
-                            total_points: number;
-                        }>)
-                    )
-                );
-
+                setTokens(tokenFiltered);
+                setTokenType(tokenFiltered.length > 0 ? tokenFiltered[0].project_symbol : undefined);
             }
         }
 
@@ -200,49 +209,10 @@ export default function Stake() {
                 <div className="container">
                     {address && user && (
                         <div className="flex justify-center mt-4 md:!mt-8">
-                            <div className="w-full md:!w-[750px]">
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-                                    <div className="flex bg-[#18181B] border-2 border-[#323237] flex-grow items-center justify-between p-4 px-8 h-[68px] md:h-[105px] w-full rounded-[15px] md:rounded-[25px] text-[#A1A1AA]">
-                                        <div className="flex items-center gap-4">
-                                            <div className="hidden md:!flex w-[40px] h-[40px] md:w-[70px] md:h-[70px] bg-amber-200 rounded-full items-center justify-center">
-                                                <Link href={`/p/${user?.user_address}`}>
-                                                    <img
-                                                        src={user?.user_image_url ?? DEFAULT_IMAGE_PROFILE}
-                                                        alt={user?.user_address ?? ""}
-                                                        className="rounded-full object-cover w-full h-full"
-                                                        onError={(e: any) => {
-                                                            e.target.src = DEFAULT_IMAGE_PROFILE;
-                                                        }}
-                                                    />
-                                                </Link>
-                                            </div>
-                                            <div>
-                                                <span className="text-[13px] md:text-[20px] text-white">Address</span>
-                                                <Link href={`https://www.stargaze.zone/p/${user?.user_address}`} target="_blank" className="text-center text-[#DB2877]">
-                                                    <p className="text-[12px] md:text-[20px] font-bold">
-                                                        {formatAddress(user?.user_address)}
-                                                    </p>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex bg-[#18181B] border-2 border-[#323237] flex-grow items-center p-4 px-8 h-[68px] md:h-[105px] w-full rounded-[15px] md:rounded-[25px] text-[#A1A1AA]">
-                                        <div className="flex items-center gap-4">
-                                            <div className="hidden md:flex">
-                                                <img src="/images/Icon/wzrd.png" className="h-[35px] md:!h-[55px]" alt="WZRD Token" />
-                                            </div>
-                                            <div className="block">
-                                                <span className="text-[12px] md:text-[20px] text-white">Token</span>
-                                                <p className="text-[10px] md:text-[20px] font-bold text-white">
-                                                    {formatDecimal(tokens?.length > 0 ? tokens[0].total_points : 0, 2)} $WZRD
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <RaffleTokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
                         </div>
                     )}
+
                     <div className="mt-8 md:!mt-24">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-6 md:gap-8 lg:gap-10">
                             {raffles.map((item, index) => (
