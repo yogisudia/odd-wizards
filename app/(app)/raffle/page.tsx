@@ -33,13 +33,13 @@ export default function Stake() {
     const [stakers, setStakers] = useState<any>();
     const [tokens, setTokens] = useState<any[] | []>([]);
     const [hasMore, setHasMore] = useState<boolean>(true);
-    const [tokenType, setTokenType] = useState<string | undefined>(undefined);
+    const [tokenType, setTokenType] = useState<string[] | []>([]);
     const { address } = useChain("stargaze");
     const LIMIT = 8;
 
     const fetchRaffles = async (pageNum: number, append: boolean = false) => {
         try {
-            const resp = await axios.get(`/api/raffle/list?${tokenType ? `type=${tokenType}` : ""}&page=${pageNum}&limit=${LIMIT}`);
+            const resp = await axios.get(`/api/raffle/list?${tokenType.length > 0 ? `type=${tokenType.join(",")}` : ""}&page=${pageNum}&limit=${LIMIT}`);
             const { data, pagination } = resp.data;
 
             if (append) {
@@ -110,7 +110,7 @@ export default function Stake() {
     useEffect(() => {
         async function fetchData() {
             if (address) {
-                let resp = await axios.get(`/api/user/${address}`);
+                let resp = await axios.get(`/api/user/stars130tcpz6l0j9f382prlj67r29jmr25cgpacmd7r`);
                 const data = resp.data.data;
                 setStakers(data.staker);
 

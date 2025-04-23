@@ -20,12 +20,13 @@ export interface TokenInfo {
 
 export interface RaffleTokensCardProps {
     data: TokenInfo[],
-    tokenType: string | undefined,
-    setTokenType: Function
+    tokenType: string[] | [],
+    setTokenType: React.Dispatch<React.SetStateAction<string[] | []>>
 }
 
 const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardProps) => {
     const [isMobile, setIsMobile] = useState(false);
+    const tokenTypeArray = tokenType as string[]; // Type assertion to handle the array
 
     // Check if we're on mobile based on screen width
     useEffect(() => {
@@ -41,14 +42,16 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
         };
     }, []);
 
-    // Sort data and set initial token type (only when data changes or component mounts)
+    // Set initial token type once when data is loaded
     useEffect(() => {
-        if (data.length > 0 && !tokenType) {
+        if (data.length > 0 && tokenType.length === 0) {
             const sortedData = [...data].sort((a, b) => a.project_seqn - b.project_seqn);
-            setTokenType(sortedData[0].project_symbol);
+            if (sortedData.length > 0) {
+                setTokenType([sortedData[0].project_symbol]);
+            }
         }
-    }, [data, setTokenType, tokenType]);
-
+    }, [data, tokenType.length, setTokenType]);
+    
     // Sort data based on project_seqn
     const sortedData = [...data].sort((a, b) => a.project_seqn - b.project_seqn);
     
@@ -58,12 +61,18 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
     // Check if we need to center items (2 or fewer on desktop)
     const shouldCenterItems = sortedData.length <= 2 && !isMobile;
 
-    // Handle token selection
+    // Handle token selection with multiple select
     const handleTokenClick = (symbol: string) => {
-        if (tokenType === symbol) {
-            setTokenType(undefined);
+        if (tokenTypeArray.includes(symbol)) {
+            // Remove the token if it's already selected
+            setTokenType(prev => {
+                const newSelection = prev.filter(item => item !== symbol);
+                // If removing the last token, return the empty array, otherwise return the new selection
+                return newSelection.length > 0 ? newSelection : ([] as string[]);
+            });
         } else {
-            setTokenType(symbol);
+            // Add the token to the selection
+            setTokenType(prev => [...prev, symbol]);
         }
     };
 
@@ -77,8 +86,17 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                             key={index}
                             onClick={() => handleTokenClick(token.project_symbol)}
                             className={cn("cursor-pointer w-full max-w-xs border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA]",
-                                tokenType === token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
+                                tokenTypeArray.includes(token.project_symbol) ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
                             )}
+                            role="button"
+                            aria-pressed={tokenTypeArray.includes(token.project_symbol)}
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleTokenClick(token.project_symbol);
+                                }
+                            }}
                         >
                             <div className="flex items-center gap-3 md:gap-4 w-full">
                                 <div className="flex-shrink-0">
@@ -118,9 +136,18 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                                 <div 
                                     onClick={() => handleTokenClick(token.project_symbol)} 
                                     className={cn(
-                                        "cursor-pointer border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full",
-                                        tokenType === token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
+                                        "cursor-pointer border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full relative",
+                                        tokenTypeArray.includes(token.project_symbol) ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
                                     )}
+                                    role="button"
+                                    aria-pressed={tokenTypeArray.includes(token.project_symbol)}
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            handleTokenClick(token.project_symbol);
+                                        }
+                                    }}
                                 >
                                     <div className="flex items-center gap-3 md:gap-4 w-full">
                                         <div className="flex-shrink-0">
@@ -145,11 +172,35 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                     </CarouselContent>
                     {sortedData.length > itemsPerView && (
                         <>
-                            <CarouselPrevious className="hidden md:!flex -left-4 md:-left-6" />
-                            <CarouselNext className="hidden md:!flex -right-4 md:-right-6" />
+                            <CarouselPrevious className="hidden md:!flex -left-4 md:-left-6" aria-label="Previous tokens" />
+                            <CarouselNext className="hidden md:!flex -right-4 md:-right-6" aria-label="Next tokens" />
                         </>
                     )}
                 </Carousel>
+            )}
+            
+            {/* Selected tokens summary (optional) */}
+            {tokenTypeArray.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2 items-center justify-center">
+                    <span className="text-xs text-gray-400">Selected: </span>
+                    {tokenTypeArray.map((symbol, index) => (
+                        <span key={index} className="text-xs bg-[#323237] text-white px-2 py-1 rounded-full">
+                            ${symbol}
+                            {
+                                tokenTypeArray.length > 1 && <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleTokenClick(symbol);
+                                }}
+                                className="ml-1 text-gray-400 hover:text-white"
+                                aria-label={`Remove ${symbol}`}
+                            >
+                                ×
+                            </button>
+                            }
+                        </span>
+                    ))}
+                </div>
             )}
         </div>
     );
