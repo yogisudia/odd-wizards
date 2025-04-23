@@ -41,15 +41,31 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
         };
     }, []);
 
+    // Sort data and set initial token type (only when data changes or component mounts)
+    useEffect(() => {
+        if (data.length > 0 && !tokenType) {
+            const sortedData = [...data].sort((a, b) => a.project_seqn - b.project_seqn);
+            setTokenType(sortedData[0].project_symbol);
+        }
+    }, [data, setTokenType, tokenType]);
+
     // Sort data based on project_seqn
     const sortedData = [...data].sort((a, b) => a.project_seqn - b.project_seqn);
-    setTokenType(sortedData.length > 0 ? sortedData[0].project_symbol : undefined);
-
+    
     // Determine number of items to show based on screen size
     const itemsPerView = isMobile ? 1.5 : 3.5;
     
     // Check if we need to center items (2 or fewer on desktop)
     const shouldCenterItems = sortedData.length <= 2 && !isMobile;
+
+    // Handle token selection
+    const handleTokenClick = (symbol: string) => {
+        if (tokenType === symbol) {
+            setTokenType(undefined);
+        } else {
+            setTokenType(symbol);
+        }
+    };
 
     return (
         <div className="w-full max-w-3xl mx-auto px-4">
@@ -59,9 +75,9 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                     {sortedData.map((token, index) => (
                         <div 
                             key={index}
-                            onClick={() => { setTokenType(token.project_symbol) }}
+                            onClick={() => handleTokenClick(token.project_symbol)}
                             className={cn("cursor-pointer w-full max-w-xs border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA]",
-                                tokenType == token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
+                                tokenType === token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
                             )}
                         >
                             <div className="flex items-center gap-3 md:gap-4 w-full">
@@ -99,9 +115,13 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                                 key={index} 
                                 className="pl-2 md:pl-4 basis-4/5 md:basis-1/3"
                             >
-                                <div onClick={() => { setTokenType(token.project_symbol) }} className={cn(
-                                    "cursor-pointer border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full",
-                                    tokenType == token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]")}>
+                                <div 
+                                    onClick={() => handleTokenClick(token.project_symbol)} 
+                                    className={cn(
+                                        "cursor-pointer border-2 border-[#323237] p-3 md:p-4 rounded-2xl text-[#A1A1AA] h-full",
+                                        tokenType === token.project_symbol ? "bg-[url('/images/About.gif')] bg-cover bg-center" : "bg-[#18181B]"
+                                    )}
+                                >
                                     <div className="flex items-center gap-3 md:gap-4 w-full">
                                         <div className="flex-shrink-0">
                                             <img
