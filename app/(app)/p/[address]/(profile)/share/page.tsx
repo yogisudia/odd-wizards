@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import Loading from "@/components/Loading";
 import { mst_users } from "@prisma/client";
 import { toPng } from 'html-to-image';
+import TokensCard from "@/components/profile/TokensCard";
 
 export default function Profile({ params }: { params: { address: string } }) {
     const [user, setUser] = useState<mst_users>();
@@ -28,6 +29,7 @@ export default function Profile({ params }: { params: { address: string } }) {
     const [stakers, setStakers] = useState<any>();
     const [tokens, setTokens] = useState<any[] | []>([]);
     const componentRef = useRef<HTMLDivElement>(null);
+    const [tokenType, setTokenType] = useState<string[] | []>([]);
 
     useEffect(() => {
 
@@ -183,21 +185,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                             <div className="mt-8 px-2">
                                 <span className="text-gray-400">Token</span>
                                 {
-                                    loading ? <Loading /> : (
-                                        <div className="mt-1 grid md:flex items-center gap-4">
-                                            {
-                                                tokens?.map((staker: any, index: number) => {
-                                                    return <div key={index} className="p-4 bg-[#18181B] border border-[#323237] rounded-2xl font-bold max-w-max flex items-center gap-x-4">
-                                                        <img src={staker?.project_symbol_img} className="w-6 h-6" />
-                                                        <span className="text-[13px] md:text-base">
-                                                            {/* <NumberTicker value={staker?.staker?.staker_nft_staked ?? 0} decimalPlaces={2} /> NFTs/<NumberTicker value={staker?.staker?.staker_total_points ?? 0} decimalPlaces={2} /> $WZRD */}
-                                                            {formatDecimal(staker?.total_nft_staked ?? 0, 2)} NFTs/{formatDecimal(staker?.total_points ?? 0, 2)} ${staker?.project_symbol}
-                                                        </span>
-                                                    </div>
-                                                })
-                                            }
-                                        </div>
-                                    )
+                                    loading ? <Loading /> : <TokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
                                 }
                             </div>
                         </div>
@@ -205,7 +193,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                     </div >
                 </div>
                 <div className="bg-black">
-                    <NFTGallery address={params.address} />
+                    <NFTGallery address={params.address} types={tokenType} />
                 </div>
             </div>
         </div>
