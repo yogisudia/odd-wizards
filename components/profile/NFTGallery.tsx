@@ -10,22 +10,22 @@ import { OwnedTokensResponse, Token } from "@/types";
 import Loading from "../Loading";
 
 export interface NFTGalleryProps {
-  address: string
+  address: string,
+  types: string[] | []
 }
 
-export default function NFTGallery({ address }: NFTGalleryProps) {
+export default function NFTGallery({ address, types }: NFTGalleryProps) {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState<number>(0);
   const limit = 16;
-  const config = getConfig();
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       try {
-        let resp = await axios.get(`/api/user/nfts/${address}?collection_address=${config?.collection_address}&limit=${limit}&page=${page}`)
+        let resp = await axios.get(`/api/user/nfts/${address}?${types.length > 0 ? `type=${types.join(",")}` : ""}&limit=${limit}&page=${page}`)
         const data: OwnedTokensResponse = resp.data.data;
         setTokens((prev) => [...prev, ...data.tokens]);
         setHasMore(data.pageInfo.total > (page + 1) * limit);
@@ -37,6 +37,25 @@ export default function NFTGallery({ address }: NFTGalleryProps) {
 
     fetchData();
   }, [page]);
+
+  useEffect(() => {
+    async function fetchData() {
+      setTokens([]);
+      setPage(0);
+      setLoading(true);
+      try {
+        let resp = await axios.get(`/api/user/nfts/${address}?${types.length > 0 ? `type=${types.join(",")}` : ""}&limit=${limit}&page=${page}`)
+        const data: OwnedTokensResponse = resp.data.data;
+        setTokens(data.tokens);
+        setHasMore(data.pageInfo.total > (page + 1) * limit);
+      } catch (error) {
+        console.error("Error fetching nfts data:", error);
+      }
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [types]);
 
   const renderGallery = (tokens: Token[]) => {
     const galleries = [];

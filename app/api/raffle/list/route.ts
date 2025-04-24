@@ -9,7 +9,6 @@ function buildRaffleFilters(searchParams: URLSearchParams) {
 
     if (types) {
         const typesSplit = types.split(",");
-        console.log("typesSplit", typesSplit);
         where.raffle_price_type = { in: typesSplit };
     } else if (rafflePriceType) {
         where.raffle_price_type = rafflePriceType;

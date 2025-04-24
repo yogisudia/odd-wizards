@@ -22,6 +22,7 @@ import { promiseToast } from "@/components/ui/use-toast";
 import { mst_users } from "@prisma/client";
 import NumberTicker from "@/components/ui/number-ticker";
 import { sum } from "@cosmos-kit/core";
+import TokensCard from "@/components/profile/TokensCard";
 
 export default function Profile({ params }: { params: { address: string } }) {
     const config = getConfig();
@@ -32,6 +33,7 @@ export default function Profile({ params }: { params: { address: string } }) {
     const [loading, setLoading] = useState<boolean>(true);
     const componentRef = useRef<HTMLDivElement>(null);
     const [html2pdf, setHtml2pdf] = useState<any>(null);
+    const [tokenType, setTokenType] = useState<string[] | []>([]);
 
     useEffect(() => {
 
@@ -45,33 +47,35 @@ export default function Profile({ params }: { params: { address: string } }) {
 
             setTokens(
                 Object.values(
-                  data.staker.reduce((acc: any, staker: any) => {
-                    const projectId = staker.staker_project_id ?? 0;
-                    const project = staker.projects; // Getting the related project data
-              
-                    if (!acc[projectId]) {
-                      acc[projectId] = {
-                        project_id: projectId,
-                        project_symbol: project?.project_symbol ?? '',
-                        project_symbol_img: project?.project_symbol_img ?? '',
-                        total_nft_staked: 0,
-                        total_points: 0
-                      };
-                    }
-              
-                    acc[projectId].total_nft_staked += staker.staker_nft_staked ?? 0;
-                    acc[projectId].total_points += staker.staker_total_points ?? 0;
-              
-                    return acc;
-                  }, {} as Record<number, {
-                    project_id: number;
-                    project_symbol: string;
-                    project_symbol_img: string;
-                    total_nft_staked: number;
-                    total_points: number;
-                  }>)
+                    data.staker.reduce((acc: any, staker: any) => {
+                        const projectId = staker.staker_project_id ?? 0;
+                        const project = staker.projects; // Getting the related project data
+
+                        if (!acc[projectId]) {
+                            acc[projectId] = {
+                                project_id: projectId,
+                                project_seqn: project?.project_seqn,
+                                project_symbol: project?.project_symbol ?? '',
+                                project_symbol_img: project?.project_symbol_img ?? '',
+                                total_nft_staked: 0,
+                                total_points: 0
+                            };
+                        }
+
+                        acc[projectId].total_nft_staked += staker.staker_nft_staked ?? 0;
+                        acc[projectId].total_points += staker.staker_total_points ?? 0;
+
+                        return acc;
+                    }, {} as Record<number, {
+                        project_id: number;
+                        project_seqn: number;
+                        project_symbol: string;
+                        project_symbol_img: string;
+                        total_nft_staked: number;
+                        total_points: number;
+                    }>)
                 )
-              );
+            );
 
             setLoading(false);
         }
@@ -245,9 +249,8 @@ export default function Profile({ params }: { params: { address: string } }) {
             <div>
                 <div className="w-full h-screen bg-[url('/images/Account.gif')] bg-cover bg-center">
                     <div className="relative h-screen flex items-end pb-4">
-                        <div className="absolute z-10 left-4 md:left-24 bottom-5">
-
-                            <div className="flex gap-x-6 items-center">
+                        <div className="absolute z-10 bottom-5">
+                            <div className="flex gap-x-6 px-4 md:px-24 items-center">
                                 <div className="shrink-0 w-[100px] h-[100px] md:!w-[125px] md:!h-[125px] rounded-full overflow-hidden">
                                     <img src={user?.user_image_url ?? DEFAULT_IMAGE_PROFILE} onError={(e: any) => {
                                         e.target.src = DEFAULT_IMAGE_PROFILE;
@@ -313,24 +316,10 @@ export default function Profile({ params }: { params: { address: string } }) {
                                 }
                             </div>
 
-                            <div className="mt-8 px-2">
+                            <div className="mt-8 px-4 md:px-24">
                                 <span className="text-gray-400">Token</span>
                                 {
-                                    loading ? <Loading /> : (
-                                        <div className="mt-1 grid md:flex items-center gap-4">
-                                            {
-                                                tokens?.map((staker: any, index: number) => {
-                                                    return <div key={index} className="p-4 bg-[#18181B] border border-[#323237] rounded-2xl font-bold max-w-max flex items-center gap-x-4">
-                                                        <img src={staker?.project_symbol_img} className="w-6 h-6" />
-                                                        <span className="text-[13px] md:text-base">
-                                                            {/* <NumberTicker value={staker?.staker?.staker_nft_staked ?? 0} decimalPlaces={2} /> NFTs/<NumberTicker value={staker?.staker?.staker_total_points ?? 0} decimalPlaces={2} /> $WZRD */}
-                                                            {formatDecimal(staker?.total_nft_staked ?? 0, 2)} NFTs/{formatDecimal(staker?.total_points ?? 0, 2)} ${staker?.project_symbol}
-                                                        </span>
-                                                    </div>
-                                                })
-                                            }
-                                        </div>
-                                    )
+                                    loading ? <Loading /> : <TokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
                                 }
                             </div>
                         </div>
@@ -338,7 +327,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                     </div >
                 </div>
                 <div className="bg-black">
-                    <NFTGallery address={params.address} />
+                    <NFTGallery address={params.address} types={tokenType} />
                 </div>
             </div>
             <div className="bg-[url('/images/bg-line-grid.png')] bg-cover bg-center py-8">
@@ -349,9 +338,8 @@ export default function Profile({ params }: { params: { address: string } }) {
                 <div ref={componentRef}>
                     <div className="w-full h-[300px] bg-[url('/images/Account.gif')] bg-cover bg-center">
                         <div className="relative h-[300px] flex items-end pb-4">
-                            <div className="absolute z-10 left-4 md:left-24 bottom-5">
-
-                                <div className="flex gap-x-6 items-center">
+                            <div className="absolute z-10 bottom-5">
+                                <div className="flex gap-x-6 px-4 md:px-24 items-center">
                                     <div className="shrink-0">
                                         <img src={user?.user_image_url ?? DEFAULT_IMAGE_PROFILE} onError={(e: any) => {
                                             e.target.src = DEFAULT_IMAGE_PROFILE;
@@ -416,29 +404,16 @@ export default function Profile({ params }: { params: { address: string } }) {
                                         )
                                     }
                                 </div>
-
-                                <div className="mt-8 px-2">
+                                <div className="mt-8 px-4 md:px-24">
                                     <span className="text-gray-400">Token</span>
-                                    <div className="grid md:flex items-center mt-4 gap-4">
-                                        {
-                                            tokens?.map((staker: any, index: number) => {
-                                                return <div key={index} className="p-4 bg-[#18181B] border border-[#323237] rounded-2xl font-bold max-w-max flex items-center gap-x-4">
-                                                    <img src={staker?.project_symbol_img} className="w-6 h-6" />
-                                                    <span className="text-[13px] md:text-base">
-                                                        {/* <NumberTicker value={staker?.staker?.staker_nft_staked ?? 0} decimalPlaces={2} /> NFTs/<NumberTicker value={staker?.staker?.staker_total_points ?? 0} decimalPlaces={2} /> $WZRD */}
-                                                        {formatDecimal(staker?.total_nft_staked ?? 0, 2)} NFTs/{formatDecimal(staker?.total_points ?? 0, 2)} ${staker?.project_symbol}
-                                                    </span>
-                                                </div>
-                                            })
-                                        }
-                                    </div>
+                                    <TokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
                                 </div>
                             </div>
                             <div className="absolute left-0 bottom-0 z-1 w-full h-[350px] bg-gradient-to-b from-transparent to-black" />
                         </div >
                     </div>
                     <div className="bg-black">
-                        <NFTGallery address={params.address} />
+                        <NFTGallery address={params.address} types={tokenType} />
                     </div>
                 </div>
             </div>

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: { wallet: 
         if (!user) {
             const resp: OwnedTokensResponse = await fetchStargazeTokens({
                 owner: wallet,
-                collectionAddress: collections.map((collection) => collection.collection_address).join(","),
+                collectionAddresses: collections.map((collection) => collection.collection_address).filter((addr): addr is string => addr !== null),
                 limit: 1,
                 offset: 0
             });

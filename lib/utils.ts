@@ -102,12 +102,12 @@ export default function calculatePoint(
 
 interface FetchStargazeTokensOptions {
   owner: string;
-  collectionAddress?: string;
+  collectionAddresses?: string[]; // Changed from single address to array
   maxTokens?: number;
   sortBy?: string;
   limit?: number;
   offset?: number;
-  filterForSale?: string; // Add this new option
+  filterForSale?: string;
 }
 
 export async function fetchStargazeTokens(options: FetchStargazeTokensOptions): Promise<OwnedTokensResponse> {
@@ -115,12 +115,12 @@ export async function fetchStargazeTokens(options: FetchStargazeTokensOptions): 
 
   const {
     owner,
-    collectionAddress,
+    collectionAddresses, // Changed from collectionAddress to collectionAddresses
     maxTokens = Infinity,
     sortBy = 'ACQUIRED_DESC',
     limit = 10,
     offset = 0,
-    filterForSale // Extract the new option
+    filterForSale
   } = options;
 
   const query = `
@@ -173,9 +173,9 @@ export async function fetchStargazeTokens(options: FetchStargazeTokensOptions): 
     owner,
     limit: Math.min(limit, maxTokens),
     offset,
-    filterByCollectionAddrs: collectionAddress ? [collectionAddress] : undefined,
+    filterByCollectionAddrs: collectionAddresses && collectionAddresses.length > 0 ? collectionAddresses : undefined,
     sortBy,
-    filterForSale // Add to variables
+    filterForSale
   };
 
   try {
@@ -213,7 +213,7 @@ export async function fetchAllStargazeTokens(options: FetchAllStargazeTokensOpti
   while (true) {
     const resp: OwnedTokensResponse = await fetchStargazeTokens({
       owner,
-      collectionAddress,
+      collectionAddresses: collectionAddress ? [collectionAddress] : [],
       maxTokens: limit,
       sortBy,
       limit,

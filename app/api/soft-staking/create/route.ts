@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
             let resp: OwnedTokensResponse = await fetchStargazeTokens({
                 owner: staker_address,
-                collectionAddress: collection.collection_address,
+                collectionAddresses: [collection.collection_address],
                 limit: 1,
                 offset: 0
             });

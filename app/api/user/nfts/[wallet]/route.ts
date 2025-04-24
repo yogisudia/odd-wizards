@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: { wallet: 
     try {
         const { wallet } = params;
         const { searchParams } = request.nextUrl;
-        const collection_address = searchParams.get('collection_address');
+        const types = searchParams.get('type');
         const limit = Number(searchParams.get('limit') || 10);
         const page = Number(searchParams.get('page') || 0);
 
@@ -20,18 +20,33 @@ export async function GET(request: NextRequest, { params }: { params: { wallet: 
 
         if (!user) throw Error("User not found");
 
-        const collection = await prisma.mst_collection.findFirst({
-            where: { collection_address: collection_address },
+        const whereProject: any = {};
+
+        if (types) {
+            const typesSplit = types.split(",");
+            whereProject.project_symbol = { in: typesSplit };
+        } else if (types) {
+            whereProject.project_symbol = types;
+        }
+
+        const projects = await prisma.mst_project.findMany({ where: whereProject });
+
+        const collections = await prisma.mst_collection.findMany({
+            where: { 
+                collection_project_id: {
+                    in: projects.map(project => project.project_id)
+                } 
+            },
             include: {
                 mst_staker: false
             }
         });
 
-        if (!collection) throw Error("Collection not found");
+        if (collections.length == 0) throw Error("Collection not found");
 
         const resp: OwnedTokensResponse = await fetchStargazeTokens({
             owner: wallet,
-            collectionAddress: collection_address as string,
+            collectionAddresses: collections ? collections.map(collection => collection.collection_address).filter((addr): addr is string => addr !== null) : [],
             limit: limit,
             offset: page * limit
         });
