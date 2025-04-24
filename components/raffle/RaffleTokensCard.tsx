@@ -131,7 +131,7 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                         {sortedData.map((token, index) => (
                             <CarouselItem 
                                 key={index} 
-                                className="pl-2 md:pl-4 basis-4/5 md:basis-1/3"
+                                className="pl-2 md:pl-4 md:basis-1/3"
                             >
                                 <div 
                                     onClick={() => handleTokenClick(token.project_symbol)} 

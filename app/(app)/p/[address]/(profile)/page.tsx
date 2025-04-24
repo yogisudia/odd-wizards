@@ -249,7 +249,7 @@ export default function Profile({ params }: { params: { address: string } }) {
             <div>
                 <div className="w-full h-screen bg-[url('/images/Account.gif')] bg-cover bg-center">
                     <div className="relative h-screen flex items-end pb-4">
-                        <div className="absolute z-10 bottom-5">
+                        <div className="absolute z-10 bottom-5 left-0 right-0">
                             <div className="flex gap-x-6 px-4 md:px-24 items-center">
                                 <div className="shrink-0 w-[100px] h-[100px] md:!w-[125px] md:!h-[125px] rounded-full overflow-hidden">
                                     <img src={user?.user_image_url ?? DEFAULT_IMAGE_PROFILE} onError={(e: any) => {
@@ -316,7 +316,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                                 }
                             </div>
 
-                            <div className="mt-8 px-4 md:px-24">
+                            <div className="mt-8 px-6 md:!px-28">
                                 <span className="text-gray-400">Token</span>
                                 {
                                     loading ? <Loading /> : <TokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
@@ -338,7 +338,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                 <div ref={componentRef}>
                     <div className="w-full h-[300px] bg-[url('/images/Account.gif')] bg-cover bg-center">
                         <div className="relative h-[300px] flex items-end pb-4">
-                            <div className="absolute z-10 bottom-5">
+                            <div className="absolute z-10 bottom-5 left-0 right-0">
                                 <div className="flex gap-x-6 px-4 md:px-24 items-center">
                                     <div className="shrink-0">
                                         <img src={user?.user_image_url ?? DEFAULT_IMAGE_PROFILE} onError={(e: any) => {
@@ -404,7 +404,7 @@ export default function Profile({ params }: { params: { address: string } }) {
                                         )
                                     }
                                 </div>
-                                <div className="mt-8 px-4 md:px-24">
+                                <div className="mt-8 px-6 md:!px-28">
                                     <span className="text-gray-400">Token</span>
                                     <TokensCard data={tokens} tokenType={tokenType} setTokenType={setTokenType} />
                                 </div>

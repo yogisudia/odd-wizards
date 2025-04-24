@@ -131,7 +131,7 @@ const TokensCard = ({ data, tokenType, setTokenType }: TokensCardProps) => {
                         {sortedData.map((token, index) => (
                             <CarouselItem 
                                 key={index} 
-                                className="pl-2 md:pl-4 basis-4/5 md:basis-1/4"
+                                className="pl-2 md:pl-4 md:basis-1/4"
                             >
                                 <div 
                                     onClick={() => handleTokenClick(token.project_symbol)} 
@@ -172,8 +172,8 @@ const TokensCard = ({ data, tokenType, setTokenType }: TokensCardProps) => {
                     </CarouselContent>
                     {sortedData.length > itemsPerView && (
                         <>
-                            <CarouselPrevious className="hidden md:!flex -left-4 md:-left-6" aria-label="Previous tokens" />
-                            <CarouselNext className="hidden md:!flex -right-4 md:-right-6" aria-label="Next tokens" />
+                            <CarouselPrevious className="-left-4 md:-left-6" aria-label="Previous tokens" />
+                            <CarouselNext className="-right-4 md:-right-6" aria-label="Next tokens" />
                         </>
                     )}
                 </Carousel>
