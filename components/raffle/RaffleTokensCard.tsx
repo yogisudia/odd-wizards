@@ -172,8 +172,8 @@ const RaffleTokensCard = ({ data, tokenType, setTokenType }: RaffleTokensCardPro
                     </CarouselContent>
                     {sortedData.length > itemsPerView && (
                         <>
-                            <CarouselPrevious className="hidden md:!flex -left-4 md:-left-6" aria-label="Previous tokens" />
-                            <CarouselNext className="hidden md:!flex -right-4 md:-right-6" aria-label="Next tokens" />
+                            <CarouselPrevious className="-left-4 md:-left-6" aria-label="Previous tokens" />
+                            <CarouselNext className="-right-4 md:-right-6" aria-label="Next tokens" />
                         </>
                     )}
                 </Carousel>

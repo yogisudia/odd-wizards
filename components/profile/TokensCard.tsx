@@ -77,10 +77,10 @@ const TokensCard = ({ data, tokenType, setTokenType }: TokensCardProps) => {
     };
 
     return (
-        <div className="w-full mx-auto">
+        <div className="w-full">
             {shouldCenterItems ? (
                 // Centered layout for 1-2 items on desktop
-                <div className="flex justify-center gap-4">
+                <div className="flex gap-4">
                     {sortedData.map((token, index) => (
                         <div 
                             key={index}
